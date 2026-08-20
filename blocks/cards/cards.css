@@ -25,3 +25,8 @@
   aspect-ratio: 4 / 3;
   object-fit: cover;
 }
+
+.cards.card > ul > li {
+     border: 1px solid transparent;
+     background-color: transparent;
+}
