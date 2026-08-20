@@ -2,6 +2,7 @@ import { createOptimizedPicture } from '../../scripts/aem.js';
 
 export default function decorate(block) {
   const ul = document.createElement('ul');
+  let previousCard = null;
 
   [...block.children].forEach((row) => {
     const li = document.createElement('li');
@@ -18,27 +19,29 @@ export default function decorate(block) {
       }
     });
 
-    // Apply background color if configured
     const bodies = li.querySelectorAll('.cards-card-body');
 
-    if (bodies.length >= 2) {
-      const label = bodies[bodies.length - 2]?.textContent.trim().toLowerCase();
-      const value = bodies[bodies.length - 1]?.textContent.trim();
+    // Handle metadata row: background | value
+    if (
+      bodies.length >= 2 &&
+      bodies[0].textContent.trim().toLowerCase() === 'background'
+    ) {
+      const value = bodies[1].textContent.trim();
 
-      if (label === 'background') {
+      if (previousCard) {
         if (value.startsWith('#')) {
-          li.style.backgroundColor = value;
+          previousCard.style.backgroundColor = value;
         } else {
-          li.classList.add(`bg-${value}`);
+          previousCard.classList.add(`bg-${value}`);
         }
-
-        // Hide the background metadata
-        bodies[bodies.length - 2].remove();
-        bodies[bodies.length - 1].remove();
       }
+
+      // Don't render this metadata row as a card
+      return;
     }
 
     ul.append(li);
+    previousCard = li;
   });
 
   ul.querySelectorAll('picture > img').forEach((img) => {
